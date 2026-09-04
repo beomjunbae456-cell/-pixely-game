@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PIXELY COLLECTION</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Jua", sans-serif;
+  color: white;
+  background:
+    radial-gradient(circle at top, #38447d, #101426 60%, #080a12);
+  min-height: 100vh;
+}
+
+header {
+  padding: 18px 20px;
+  background: rgba(10, 13, 28, 0.9);
+  border-bottom: 2px solid #39477c;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 20px;
+  color: #ffd84d;
+}
+
+.money {
+  background: #242b4c;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid #46548e;
+}
+
+main {
+  max-width: 1100px;
+  margin: auto;
+  padding: 25px 18px 70px;
+}
+
+.hero {
+  background: linear-gradient(135deg, #37468a, #20284d);
+  border: 2px solid #586ab3;
+  border-radius: 25px;
+  padding: 35px 25px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 40px;
+}
+
+.hero span {
+  color: #ffd84d;
+}
+
+.hero p {
+  color: #d9deff;
+  font-size: 18px;
+}
+
+button {
+  font-family: "Jua", sans-serif;
+  border: none;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+.main-btn {
+  padding: 15px 24px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ffe15b, #ffad42);
+  color: #392700;
+  font-weight: bold;
+  box-shadow: 0 5px 0 #b87512;
+}
+
+.main-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #b87512;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 22px 0;
+}
+
+.stat {
+  background: #1b2038;
+  border: 1px solid #35416d;
+  border-radius: 18px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat small {
+  color: #aab4e5;
+}
+
+.stat strong {
+  display: block;
+  color: #ffd84d;
+  font-size: 25px;
+  margin-top: 5px;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 35px;
+}
+
+.progress-box {
+  width: 150px;
+  height: 12px;
+  background: #252b49;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ffd84d, #ff9d3e);
+  transition: 0.4s;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.card {
+  background: linear-gradient(145deg, #252c50, #171b30);
+  border: 2px solid #303b66;
+  border-radius: 20px;
+  padding: 15px;
+  text-align: center;
+  min-height: 205px;
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  border-color: #ffd84d;
+}
+
+.card.locked {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+.icon {
+  width: 90px;
+  height: 90px;
+  margin: auto;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #35406f;
+  font-size: 55px;
+}
+
+.name {
+  margin-top: 12px;
+  font-size: 20px;
+}
+
+.rarity {
+  margin-top: 7px;
+}
+
+.normal { color: #eeeeee; }
+.rare { color: #66b9ff; }
+.epic { color: #c87cff; }
+.legend { color: #ffd84d; }
+.mythic { color: #ff70b7; }
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  backdrop-filter: blur(8px);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-box {
+  width: min(420px, 100%);
+  background: linear-gradient(145deg, #303b70, #171b31);
+  border: 2px solid #687bd0;
+  border-radius: 25px;
+  padding: 30px;
+  text-align: center;
+  animation: pop 0.35s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.reward-icon {
+  font-size: 95px;
+  margin: 15px;
+}
+
+.reset {
+  margin-top: 30px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: #303856;
+  color: white;
+}
+
+footer {
+  text-align: center;
+  color: #8c96bd;
+  padding: 25px;
+}
+
+@media(max-width: 600px) {
+  .hero h1 {
+    font-size: 30px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">🎮 PIXELY COLLECTION</div>
+
+  <div class="money">
+    🪙 <span id="coins">0</span>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <h1>🌌 <span>픽셀리</span> 캐릭터 컬렉션</h1>
+
+  <p>
+    다양한 콘텐츠 세계를 탐험하고
+    숨겨진 캐릭터를 수집하세요!
+  </p>
+
+  <button class="main-btn" onclick="explore()">
+    🎁 캐릭터 탐험하기
+  </button>
+</section>
+
+<section class="stats">
+
+  <div class="stat">
+    <small>👥 수집한 캐릭터</small>
+    <strong id="count">0 / 10</strong>
+  </div>
+
+  <div class="stat">
+    <small>🏆 수집률</small>
+    <strong id="percent">0%</strong>
+  </div>
+
+  <div class="stat">
+    <small>🎮 탐험 횟수</small>
+    <strong id="explores">0</strong>
+  </div>
+
+</section>
+
+<div class="section-title">
+  <h2>📖 캐릭터 도감</h2>
+
+  <div class="progress-box">
+    <div class="progress" id="progress"></div>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<button class="reset" onclick="resetGame()">
+  🗑️ 게임 데이터 초기화
+</button>
+
+</main>
+
+<footer>
+  PIXELY COLLECTION · FAN GAME PROJECT
+</footer>
+
+<div class="modal" id="modal">
+
+  <div class="modal-box">
+
+    <h2 id="modalTitle">🎉 새로운 캐릭터!</h2>
+
+    <div class="reward-icon" id="rewardIcon">
+      ⭐
+    </div>
+
+    <h1 id="rewardName"></h1>
+
+    <p id="rewardRarity"></p>
+
+    <p id="rewardText"></p>
+
+    <button class="main-btn" onclick="closeModal()">
+      확인
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+const characters = [
+  {id:1, name:"잠뜰", icon:"🎮", rarity:"normal", rarityName:"⭐ 일반"},
+  {id:2, name:"각별", icon:"🕵️", rarity:"normal", rarityName:"⭐ 일반"},
+  {id:3, name:"공룡", icon:"🦖", rarity:"rare", rarityName:"⭐⭐ 레어"},
+  {id:4, name:"수현", icon:"⚔️", rarity:"rare", rarityName:"⭐⭐ 레어"},
+  {id:5, name:"라더", icon:"🎭", rarity:"epic", rarityName:"⭐⭐⭐ 에픽"},
+  {id:6, name:"덕개", icon:"🐶", rarity:"epic", rarityName:"⭐⭐⭐ 에픽"},
+  {id:7, name:"미스터리", icon:"🎲", rarity:"rare", rarityName:"⭐⭐ 레어"},
+  {id:8, name:"비밀 캐릭터", icon:"👑", rarity:"legend", rarityName:"⭐⭐⭐⭐ 전설"},
+  {id:9, name:"숨겨진 존재", icon:"🔥", rarity:"legend", rarityName:"⭐⭐⭐⭐ 전설"},
+  {id:10, name:"???", icon:"🌌", rarity:"mythic", rarityName:"⭐⭐⭐⭐⭐ 신화"}
+];
+
+let collected =
+  JSON.parse(localStorage.getItem("pixelyCollected")) || [];
+
+let explores =
+  Number(localStorage.getItem("pixelyExplores")) || 0;
+
+let coins =
+  Number(localStorage.getItem("pixelyCoins")) || 0;
+
+function getRandomCharacter() {
+
+  const weights = {
+    normal:45,
+    rare:30,
+    epic:15,
+    legend:8,
+    mythic:2
+  };
+
+  let pool = [];
+
+  characters.forEach(character => {
+
+    for(let i = 0; i < weights[character.rarity]; i++) {
+      pool.push(character);
+    }
+
+  });
+
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function explore() {
+
+  const character = getRandomCharacter();
+
+  explores++;
+
+  coins += Math.floor(Math.random() * 15) + 10;
+
+  let text;
+
+  if(collected.includes(character.id)) {
+
+    text = "이미 가지고 있는 캐릭터입니다! 대신 코인을 획득했어요 🪙";
+
+  } else {
+
+    collected.push(character.id);
+
+    text = "🎉 새로운 캐릭터가 도감에 등록되었습니다!";
+
+  }
+
+  saveGame();
+  renderGame();
+
+  showModal(character, text);
+}
+
+function showModal(character, text) {
+
+  document.getElementById("rewardIcon").textContent =
+    character.icon;
+
+  document.getElementById("rewardName").textContent =
+    character.name;
+
+  const rarity =
+    document.getElementById("rewardRarity");
+
+  rarity.textContent =
+    character.rarityName;
+
+  rarity.className =
+    character.rarity;
+
+  document.getElementById("rewardText").textContent =
+    text;
+
+  document.getElementById("modal")
+    .classList.add("show");
+}
+
+function closeModal() {
+
+  document.getElementById("modal")
+    .classList.remove("show");
+}
+
+function renderGame() {
+
+  const grid =
+    document.getElementById("grid");
+
+  grid.innerHTML = "";
+
+  characters.forEach(character => {
+
+    const owned =
+      collected.includes(character.id);
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "card " + (!owned ? "locked" : "");
+
+    if(owned) {
+
+      card.innerHTML = `
+        <div class="icon">${character.icon}</div>
+        <div class="name">${character.name}</div>
+        <div class="rarity ${character.rarity}">
+          ${character.rarityName}
+        </div>
+      `;
+
+    } else {
+
+      card.innerHTML = `
+        <div class="icon">🔒</div>
+        <div class="name">???</div>
+        <div class="rarity">
+          아직 발견하지 못했습니다
+        </div>
+      `;
+
+    }
+
+    grid.appendChild(card);
+
+  });
+
+  const total = characters.length;
+  const count = collected.length;
+
+  const percent =
+    Math.floor(count / total * 100);
+
+  document.getElementById("count").textContent =
+    `${count} / ${total}`;
+
+  document.getElementById("percent").textContent =
+    `${percent}%`;
+
+  document.getElementById("explores").textContent =
+    explores;
+
+  document.getElementById("coins").textContent =
+    coins;
+
+  document.getElementById("progress").style.width =
+    `${percent}%`;
+}
+
+function saveGame() {
+
+  localStorage.setItem(
+    "pixelyCollected",
+    JSON.stringify(collected)
+  );
+
+  localStorage.setItem(
+    "pixelyExplores",
+    explores
+  );
+
+  localStorage.setItem(
+    "pixelyCoins",
+    coins
+  );
+}
+
+function resetGame() {
+
+  if(confirm("정말 모든 게임 데이터를 초기화할까요?")) {
+
+    collected = [];
+    explores = 0;
+    coins = 0;
+
+    saveGame();
+
+    renderGame();
+
+  }
+}
+
+renderGame();
+
+</script>
+
+</body>
+</html>
