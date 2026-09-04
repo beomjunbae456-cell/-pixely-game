@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>PIXELY ADVENTURE</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  background: #101426;
+  color: white;
+  font-family: "Jua", sans-serif;
+  overflow-x: hidden;
+}
+
+/* 상단 UI */
+
+header {
+  height: 65px;
+  background: linear-gradient(90deg, #252e5c, #171c3a);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  border-bottom: 3px solid #596bb5;
+}
+
+.logo {
+  color: #ffe35b;
+  font-size: 22px;
+  text-shadow: 2px 2px #000;
+}
+
+.stats {
+  display: flex;
+  gap: 10px;
+}
+
+.stat {
+  background: #10152e;
+  border: 2px solid #4b5a98;
+  padding: 7px 10px;
+  border-radius: 10px;
+}
+
+/* 게임 전체 */
+
+.game-container {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* 게임 화면 */
+
+.game {
+  width: 100%;
+  height: 500px;
+  overflow: hidden;
+  position: relative;
+  border-bottom: 5px solid #11162a;
+  background:
+    linear-gradient(
+      to bottom,
+      #5cb9ef 0%,
+      #8ed9ff 58%,
+      #62b850 58%,
+      #4f9b42 100%
+    );
+}
+
+/* 구름 */
+
+.cloud {
+  position: absolute;
+  font-size: 55px;
+  opacity: 0.85;
+  animation: cloudMove 40s linear infinite;
+}
+
+.cloud:nth-child(2) {
+  top: 60px;
+  animation-duration: 55s;
+}
+
+@keyframes cloudMove {
+  from {
+    transform: translateX(100vw);
+  }
+
+  to {
+    transform: translateX(-200px);
+  }
+}
+
+/* 월드 */
+
+.world {
+  position: absolute;
+  width: 3200px;
+  height: 100%;
+  left: 0;
+  transition: transform 0.05s linear;
+}
+
+/* 바닥 */
+
+.ground {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 170px;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #438c3b 0px,
+      #438c3b 40px,
+      #3b7e34 40px,
+      #3b7e34 80px
+    );
+
+  border-top: 8px solid #6fc85d;
+}
+
+/* 배경 산 */
+
+.mountain {
+  position: absolute;
+  bottom: 165px;
+  width: 0;
+  height: 0;
+
+  border-left: 180px solid transparent;
+  border-right: 180px solid transparent;
+  border-bottom: 250px solid #6389a0;
+
+  opacity: 0.6;
+}
+
+/* 나무 */
+
+.tree {
+  position: absolute;
+  bottom: 160px;
+  font-size: 100px;
+  filter: drop-shadow(4px 5px rgba(0,0,0,0.25));
+}
+
+/* 표지판 */
+
+.sign {
+  position: absolute;
+  bottom: 165px;
+  background: #855a32;
+  border: 4px solid #5c3a20;
+  padding: 10px 15px;
+  border-radius: 8px;
+  color: #ffe7ad;
+  font-size: 18px;
+}
+
+/* 플레이어 */
+
+.player {
+  position: absolute;
+  bottom: 150px;
+  width: 55px;
+  height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 50px;
+
+  z-index: 20;
+
+  transition: transform 0.08s;
+}
+
+.player.walk {
+  animation: walk 0.25s infinite alternate;
+}
+
+@keyframes walk {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-5px);
+  }
+}
+
+/* NPC */
+
+.npc {
+  position: absolute;
+  bottom: 150px;
+
+  width: 70px;
+  height: 90px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  z-index: 10;
+}
+
+.npc-icon {
+  font-size: 55px;
+
+  animation: npcFloat 1.5s infinite ease-in-out;
+}
+
+@keyframes npcFloat {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-7px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.npc-name {
+  background: #202747;
+  border: 2px solid #7587d6;
+  padding: 3px 8px;
+  border-radius: 8px;
+
+  white-space: nowrap;
+}
+
+.npc.found {
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+
+/* 발견 표시 */
+
+.found-mark {
+  position: absolute;
+  top: -30px;
+  font-size: 25px;
+  animation: mark 0.6s infinite alternate;
+}
+
+@keyframes mark {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-8px);
+  }
+}
+
+/* 안내 */
+
+.hint {
+  position: absolute;
+
+  top: 15px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  background: rgba(15, 20, 45, 0.85);
+
+  border: 2px solid #697bd0;
+
+  padding: 10px 18px;
+
+  border-radius: 20px;
+
+  z-index: 30;
+
+  text-align: center;
+}
+
+/* 모바일 조작 */
+
+.controls {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 25px;
+
+  padding: 25px;
+
+  background: #161b33;
+}
+
+.control-btn {
+  width: 90px;
+  height: 65px;
+
+  border: none;
+
+  border-radius: 18px;
+
+  font-size: 32px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #4f62ad,
+      #2b3567
+    );
+
+  color: white;
+
+  box-shadow: 0 6px 0 #182044;
+}
+
+.control-btn:active {
+  transform: translateY(5px);
+
+  box-shadow: 0 1px 0 #182044;
+}
+
+/* 도감 */
+
+.collection {
+  padding: 25px 18px 60px;
+
+  background:
+    linear-gradient(
+      #171c33,
+      #0d1020
+    );
+}
+
+.collection h2 {
+  margin-top: 0;
+
+  color: #ffe15b;
+}
+
+.collection-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(110px, 1fr));
+
+  gap: 12px;
+}
+
+.card {
+  background: #242b4c;
+
+  border: 2px solid #3f4e87;
+
+  border-radius: 15px;
+
+  padding: 12px;
+
+  text-align: center;
+}
+
+.card.locked {
+  filter: grayscale(1);
+
+  opacity: 0.45;
+}
+
+.card-icon {
+  font-size: 45px;
+}
+
+.rarity {
+  margin-top: 5px;
+
+  font-size: 14px;
+}
+
+.normal {
+  color: #eee;
+}
+
+.rare {
+  color: #66baff;
+}
+
+.epic {
+  color: #d582ff;
+}
+
+.legend {
+  color: #ffe15b;
+}
+
+/* 발견 팝업 */
+
+.modal {
+  position: fixed;
+
+  inset: 0;
+
+  display: none;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: rgba(0,0,0,0.75);
+
+  z-index: 100;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-box {
+  width: 85%;
+
+  max-width: 400px;
+
+  text-align: center;
+
+  padding: 30px;
+
+  border-radius: 25px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #3e4e92,
+      #1b2142
+    );
+
+  border: 3px solid #879cff;
+
+  animation: popup 0.35s;
+}
+
+@keyframes popup {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.reward-icon {
+  font-size: 90px;
+}
+
+.modal-btn {
+  margin-top: 15px;
+
+  padding: 13px 30px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  font-family: inherit;
+
+  font-size: 18px;
+
+  background: #ffe05b;
+
+  color: #3a2b00;
+}
+
+@media (min-width: 800px) {
+
+  .controls {
+    display: none;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <div class="logo">
+    🎮 PIXELY ADVENTURE
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      👥 <span id="count">0</span>/8
+    </div>
+
+    <div class="stat">
+      🪙 <span id="coins">0</span>
+    </div>
+
+  </div>
+
+</header>
+
+
+<div class="game-container">
+
+<div class="game">
+
+  <div class="cloud">
+    ☁️
+  </div>
+
+  <div class="cloud">
+    ☁️☁️
+  </div>
+
+  <div class="hint">
+
+    ⬅️ ➡️ 움직여서
+    캐릭터를 찾아보세요!
+
+  </div>
+
+
+  <div
+    class="world"
+    id="world"
+  >
+
+    <div
+      class="mountain"
+      style="left:300px"
+    ></div>
+
+    <div
+      class="mountain"
+      style="left:900px"
+    ></div>
+
+    <div
+      class="mountain"
+      style="left:1800px"
+    ></div>
+
+
+    <div
+      class="tree"
+      style="left:250px"
+    >
+      🌲
+    </div>
+
+    <div
+      class="tree"
+      style="left:700px"
+    >
+      🌳
+    </div>
+
+    <div
+      class="tree"
+      style="left:1200px"
+    >
+      🌲
+    </div>
+
+    <div
+      class="tree"
+      style="left:1700px"
+    >
+      🌳
+    </div>
+
+    <div
+      class="tree"
+      style="left:2300px"
+    >
+      🌲
+    </div>
+
+
+    <div
+      class="sign"
+      style="left:500px"
+    >
+
+      🌲 픽셀리 숲
+
+    </div>
+
+    <div
+      class="sign"
+      style="left:1500px"
+    >
+
+      🏘️ 콘텐츠 마을
+
+    </div>
+
+
+    <div
+      class="ground"
+    ></div>
+
+
+    <!-- NPC -->
+
+    <div
+      class="npc"
+      data-id="1"
+      style="left:400px"
+    >
+
+      <div class="npc-icon">
+        🎮
+      </div>
+
+      <div class="npc-name">
+        잠뜰
+      </div>
+
+    </div>
+
+
+    <div
+      class="npc"
+      data-id="2"
+      style="left:800px"
+    >
+
+      <div class="npc-icon">
+        🕵️
+      </div>
+
+      <div class="npc-name">
+        각별
+      </div>
+
+    </div>
+
+
+    <div
+      class="npc"
+      data-id="3"
+      style="left:1150px"
+    >
+
+      <div class="npc-icon">
+        🦖
+      </div>
+
+      <div class="npc-name">
+        공룡
+      </div>
+
+    </div>
+
+
+    <div
+      class="npc"
+      data-id="4"
+      style="left:1550px"
+    >
+
+      <div class="npc-icon">
+        ⚔️
+      </div>
+
+      <div class="npc-name">
+        수현
+      </div>
+
+    </div>
+
+
+    <div
+      class="npc"
+      data-id="5"
+      style="left:1950px"
+    >
+
+      <div class="npc-icon">
+        🎭
+      </div>
+
+      <div class="npc-name">
+        라더
+      </div>
+
+    </div>
+
+
+    <div
+      class="npc"
+      data-id="6"
+      style="left:2300px"
+    >
+
+      <div class="npc-icon">
+        🐶
+      </div>
+
+      <div class="npc-name">
+        덕개
+      </div>
+
+    </div>
+
+
+    <div
+      class="npc"
+      data-id="7"
+      style="left:2650px"
+    >
+
+      <div class="npc-icon">
+        🎲
+      </div>
+
+      <div class="npc-name">
+        미스터리
+      </div>
+
+    </div>
+
+
+    <div
+      class="npc"
+      data-id="8"
+      style="left:3000px"
+    >
+
+      <div class="npc-icon">
+        👑
+      </div>
+
+      <div class="npc-name">
+        비밀 캐릭터
+      </div>
+
+    </div>
+
+
+    <!-- 플레이어 -->
+
+    <div
+      class="player"
+      id="player"
+    >
+
+      🧑‍🚀
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<div class="controls">
+
+  <button
+    class="control-btn"
+    id="leftBtn"
+  >
+
+    ◀
+
+  </button>
+
+
+  <button
+    class="control-btn"
+    id="rightBtn"
+  >
+
+    ▶
+
+  </button>
+
+</div>
+
+
+<section class="collection">
+
+<h2>
+📖 캐릭터 도감
+</h2>
+
+<div
+  class="collection-grid"
+  id="collectionGrid"
+></div>
+
+</section>
+
+</div>
+
+
+<!-- 발견 팝업 -->
+
+<div
+  class="modal"
+  id="modal"
+>
+
+<div class="modal-box">
+
+  <h2>
+    🎉 캐릭터 발견!
+  </h2>
+
+  <div
+    class="reward-icon"
+    id="rewardIcon"
+  >
+  </div>
+
+  <h1
+    id="rewardName"
+  >
+  </h1>
+
+  <p
+    id="rewardRarity"
+  >
+  </p>
+
+  <p>
+    도감에 등록되었습니다!
+  </p>
+
+  <button
+    class="modal-btn"
+    onclick="closeModal()"
+  >
+
+    계속 탐험하기!
+
+  </button>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* 캐릭터 데이터 */
+
+const characters = [
+
+  {
+    id:1,
+    name:"잠뜰",
+    icon:"🎮",
+    rarity:"normal",
+    rarityName:"⭐ 일반"
+  },
+
+  {
+    id:2,
+    name:"각별",
+    icon:"🕵️",
+    rarity:"normal",
+    rarityName:"⭐ 일반"
+  },
+
+  {
+    id:3,
+    name:"공룡",
+    icon:"🦖",
+    rarity:"rare",
+    rarityName:"⭐⭐ 레어"
+  },
+
+  {
+    id:4,
+    name:"수현",
+    icon:"⚔️",
+    rarity:"rare",
+    rarityName:"⭐⭐ 레어"
+  },
+
+  {
+    id:5,
+    name:"라더",
+    icon:"🎭",
+    rarity:"epic",
+    rarityName:"⭐⭐⭐ 에픽"
+  },
+
+  {
+    id:6,
+    name:"덕개",
+    icon:"🐶",
+    rarity:"epic",
+    rarityName:"⭐⭐⭐ 에픽"
+  },
+
+  {
+    id:7,
+    name:"미스터리",
+    icon:"🎲",
+    rarity:"legend",
+    rarityName:"⭐⭐⭐⭐ 전설"
+  },
+
+  {
+    id:8,
+    name:"비밀 캐릭터",
+    icon:"👑",
+    rarity:"legend",
+    rarityName:"⭐⭐⭐⭐ 전설"
+  }
+
+];
+
+
+/* 저장 데이터 */
+
+let collected =
+JSON.parse(
+  localStorage.getItem(
+    "pixelyAdventureCollected"
+  )
+) || [];
+
+
+let coins =
+Number(
+  localStorage.getItem(
+    "pixelyAdventureCoins"
+  )
+) || 0;
+
+
+/* 플레이어 위치 */
+
+let playerX = 100;
+
+const player =
+document.getElementById("player");
+
+const world =
+document.getElementById("world");
+
+
+/* 플레이어 위치 업데이트 */
+
+function updatePlayer() {
+
+  player.style.left =
+  playerX + "px";
+
+  const screenCenter =
+  window.innerWidth / 2;
+
+  let camera =
+  playerX - screenCenter;
+
+  if(camera < 0) {
+
+    camera = 0;
+
+  }
+
+  if(camera > 3200 - window.innerWidth) {
+
+    camera =
+    3200 - window.innerWidth;
+
+  }
+
+  world.style.transform =
+  `translateX(-${camera}px)`;
+
+  checkNPC();
+
+}
+
+
+/* 이동 */
+
+function move(direction) {
+
+  playerX +=
+  direction * 18;
+
+
+  if(playerX < 0) {
+
+    playerX = 0;
+
+  }
+
+
+  if(playerX > 3100) {
+
+    playerX = 3100;
+
+  }
+
+
+  player.classList.add("walk");
+
+  updatePlayer();
+
+
+  setTimeout(
+    () => {
+
+      player.classList.remove("walk");
+
+    },
+
+    150
+  );
+
+}
+
+
+/* 키보드 */
+
+document.addEventListener(
+
+  "keydown",
+
+  event => {
+
+    if(
+      event.key === "ArrowLeft" ||
+      event.key === "a" ||
+      event.key === "A"
+    ) {
+
+      move(-1);
+
+    }
+
+
+    if(
+      event.key === "ArrowRight" ||
+      event.key === "d" ||
+      event.key === "D"
+    ) {
+
+      move(1);
+
+    }
+
+  }
+
+);
+
+
+/* 모바일 버튼 */
+
+let moveTimer;
+
+
+function startMove(direction) {
+
+  move(direction);
+
+  moveTimer =
+  setInterval(
+    () => move(direction),
+    80
+  );
+
+}
+
+
+function stopMove() {
+
+  clearInterval(moveTimer);
+
+}
+
+
+const leftBtn =
+document.getElementById("leftBtn");
+
+const rightBtn =
+document.getElementById("rightBtn");
+
+
+leftBtn.addEventListener(
+
+  "touchstart",
+
+  event => {
+
+    event.preventDefault();
+
+    startMove(-1);
+
+  }
+
+);
+
+
+leftBtn.addEventListener(
+  "touchend",
+  stopMove
+);
+
+
+rightBtn.addEventListener(
+
+  "touchstart",
+
+  event => {
+
+    event.preventDefault();
+
+    startMove(1);
+
+  }
+
+);
+
+
+rightBtn.addEventListener(
+  "touchend",
+  stopMove
+);
+
+
+leftBtn.addEventListener(
+  "mousedown",
+  () => startMove(-1)
+);
+
+
+rightBtn.addEventListener(
+  "mousedown",
+  () => startMove(1)
+);
+
+
+document.addEventListener(
+  "mouseup",
+  stopMove
+);
+
+
+/* NPC 확인 */
+
+function checkNPC() {
+
+  document
+  .querySelectorAll(".npc")
+  .forEach(
+
+    npc => {
+
+      const id =
+      Number(
+        npc.dataset.id
+      );
+
+
+      const npcX =
+      parseInt(
+        npc.style.left
+      );
+
+
+      const distance =
+      Math.abs(
+        playerX - npcX
+      );
+
+
+      if(
+        distance < 65 &&
+        !collected.includes(id)
+      ) {
+
+        collectCharacter(
+          id,
+          npc
+        );
+
+      }
+
+    }
+
+  );
+
+}
+
+
+/* 캐릭터 수집 */
+
+function collectCharacter(
+  id,
+  npc
+) {
+
+  const character =
+  characters.find(
+    char =>
+    char.id === id
+  );
+
+
+  collected.push(id);
+
+
+  coins +=
+  Math.floor(
+    Math.random() * 20
+  ) + 20;
+
+
+  npc.classList.add(
+    "found"
+  );
+
+
+  const mark =
+  document.createElement("div");
+
+
+  mark.className =
+  "found-mark";
+
+
+  mark.textContent =
+  "✨";
+
+
+  npc.appendChild(mark);
+
+
+  saveGame();
+
+  renderCollection();
+
+  updateStats();
+
+  showModal(
+    character
+  );
+
+}
+
+
+/* 팝업 */
+
+function showModal(
+  character
+) {
+
+  document
+  .getElementById(
+    "rewardIcon"
+  )
+  .textContent =
+  character.icon;
+
+
+  document
+  .getElementById(
+    "rewardName"
+  )
+  .textContent =
+  character.name;
+
+
+  const rarity =
+  document
+  .getElementById(
+    "rewardRarity"
+  );
+
+
+  rarity.textContent =
+  character.rarityName;
+
+
+  rarity.className =
+  character.rarity;
+
+
+  document
+  .getElementById(
+    "modal"
+  )
+  .classList.add(
+    "show"
+  );
+
+}
+
+
+function closeModal() {
+
+  document
+  .getElementById(
+    "modal"
+  )
+  .classList.remove(
+    "show"
+  );
+
+}
+
+
+/* 도감 */
+
+function renderCollection() {
+
+  const grid =
+  document.getElementById(
+    "collectionGrid"
+  );
+
+
+  grid.innerHTML =
+  "";
+
+
+  characters.forEach(
+
+    character => {
+
+      const owned =
+      collected.includes(
+        character.id
+      );
+
+
+      const card =
+      document.createElement(
+        "div"
+      );
+
+
+      card.className =
+      "card";
+
+
+      if(!owned) {
+
+        card.classList.add(
+          "locked"
+        );
+
+
+        card.innerHTML = `
+
+          <div class="card-icon">
+            🔒
+          </div>
+
+          <div>
+            ???
+          </div>
+
+          <div class="rarity">
+            탐험 중
+          </div>
+
+        `;
+
+      }
+
+
+      else {
+
+        card.innerHTML = `
+
+          <div class="card-icon">
+            ${character.icon}
+          </div>
+
+          <div>
+            ${character.name}
+          </div>
+
+          <div
+            class="
+            rarity
+            ${character.rarity}
+            "
+          >
+
+            ${character.rarityName}
+
+          </div>
+
+        `;
+
+      }
+
+
+      grid.appendChild(
+        card
+      );
+
+    }
+
+  );
+
+}
+
+
+/* 상단 정보 */
+
+function updateStats() {
+
+  document
+  .getElementById(
+    "count"
+  )
+  .textContent =
+  collected.length;
+
+
+  document
+  .getElementById(
+    "coins"
+  )
+  .textContent =
+  coins;
+
+}
+
+
+/* 저장 */
+
+function saveGame() {
+
+  localStorage.setItem(
+
+    "pixelyAdventureCollected",
+
+    JSON.stringify(
+      collected
+    )
+
+  );
+
+
+  localStorage.setItem(
+
+    "pixelyAdventureCoins",
+
+    coins
+
+  );
+
+}
+
+
+/* 이미 수집한 NPC 표시 */
+
+function loadNPCState() {
+
+  collected.forEach(
+
+    id => {
+
+      const npc =
+      document.querySelector(
+
+        `.npc[data-id="${id}"]`
+
+      );
+
+
+      if(npc) {
+
+        npc.classList.add(
+          "found"
+        );
+
+      }
+
+    }
+
+  );
+
+}
+
+
+/* 시작 */
+
+updatePlayer();
+
+renderCollection();
+
+updateStats();
+
+loadNPCState();
+
+</script>
+
+</body>
+</html>
